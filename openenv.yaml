@@ -1,0 +1,7 @@
+name: support-env
+description: "Support Environment for OpenEnv"
+version: 0.1.0
+
+# Optional OpenEnv validation schema attributes
+entrypoint: "server.app:app"
+client: "client:SQLAgentEnv"
