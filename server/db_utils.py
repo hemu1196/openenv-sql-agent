@@ -84,7 +84,7 @@ def get_tasks():
     return {
         "easy": {
             "question": "List all tables in the database",
-            "answer": "users",
+            "answer": "users",   # any expected answer
             "grader": simple_grader
         },
         "medium": {
@@ -93,8 +93,8 @@ def get_tasks():
             "grader": simple_grader
         },
         "hard": {
-            "question": "Find maximum price from products table",
-            "answer": "99.99",
+            "question": "Find maximum age from users table",
+            "answer": "50",
             "grader": simple_grader
         }
     }
