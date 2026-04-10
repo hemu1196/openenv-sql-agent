@@ -5,7 +5,7 @@ import sqlite3
 from typing import Optional
 
 from models import SQLAgentAction, SQLAgentObservation, SQLAgentState
-from server.db_utils import setup_database, get_tasks
+from .db_utils import setup_database, get_tasks
 from openenv.core.env_server import Environment
 
 class SQLAnalystEnvironment(Environment):
