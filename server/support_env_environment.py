@@ -23,7 +23,7 @@ class SQLAnalystEnvironment(Environment):
         self._found_correct_table = False
         self._valid_query_executed = False
 
-    def reset(self, config: dict = None) -> SQLAgentObservation:
+    def reset(self, config: dict = None, **kwargs) -> SQLAgentObservation:
         """Start a new episode with a fresh database."""
         if self._conn:
             self._conn.close()
@@ -59,7 +59,7 @@ class SQLAnalystEnvironment(Environment):
                      f"You can explore the SQLite database. Useful tip: You can query sqlite_master to find tables."
         )
 
-    def step(self, action: SQLAgentAction) -> SQLAgentObservation:
+    def step(self, action: SQLAgentAction, **kwargs) -> SQLAgentObservation:
         """Process a query or answer submission."""
         self._state.step_count += 1
         
