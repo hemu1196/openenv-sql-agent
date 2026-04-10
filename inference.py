@@ -125,7 +125,7 @@ async def main() -> None:
                     base_env = await SQLAgentEnv.from_docker_image(IMAGE_NAME)
                     env = base_env # type: ignore
                 else:
-                    env = SQLAgentEnv(base_url=os.getenv("SERVER_URL", "http://localhost:8000"))
+                    env = SQLAgentEnv(base_url=os.getenv("SERVER_URL", "http://localhost:7860"))
                     await env.connect()
 
                 print("Environment started", flush=True)
