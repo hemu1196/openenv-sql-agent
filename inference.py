@@ -52,6 +52,11 @@ def parse_model_response(response: str) -> SQLAgentAction:
 async def run_episode(client: OpenAI, env: SQLAgentEnv, difficulty: str):
     # Pass difficulty to server via env var for this run
     os.environ["SQL_DIFFICULTY"] = difficulty
+    
+    # Each task difficulty counts as a separate evaluated task marker
+    task_id = f"{TASK_NAME}-{difficulty}"
+    log_start(task=task_id, env=BENCHMARK, model=MODEL_NAME)
+    
     result = await env.reset()
     
     obs = result.observation
@@ -109,9 +114,6 @@ async def run_episode(client: OpenAI, env: SQLAgentEnv, difficulty: str):
 async def main() -> None:
     client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
     
-    # Needs to log start before anything so output matches schema if crash
-    log_start(task=TASK_NAME, env=BENCHMARK, model=MODEL_NAME)
-    
     env: Optional[SQLAgentEnv] = None
     
     try:
@@ -137,7 +139,8 @@ async def main() -> None:
 
         # SAFE EXIT 
         if env is None:
-            print("Could not start environment", flush=True)
+            print("❌ Could not start environment", flush=True)
+            log_start(task=f"{TASK_NAME}-fallback", env=BENCHMARK, model=MODEL_NAME)
             log_end(success=False, steps=0, score=0.0, rewards=[0.0])
             return
 
@@ -151,6 +154,7 @@ async def main() -> None:
 
     except Exception as e:
         print(f"Fatal error: {e}", flush=True)
+        log_start(task=f"{TASK_NAME}-fatal", env=BENCHMARK, model=MODEL_NAME)
         log_end(success=False, steps=0, score=0.0, rewards=[0.0])
 
     finally:
