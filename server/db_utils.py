@@ -76,21 +76,25 @@ def setup_database() -> sqlite3.Connection:
     conn.commit()
     return conn
 
-def get_tasks() -> dict:
+def simple_grader(submission, expected):
+    return str(submission).strip().lower() == str(expected).strip().lower()
+
+
+def get_tasks():
     return {
         "easy": {
-            "question": "What is the email address of the user named 'Diana Prince'?",
-            "answer": "diana@example.com",
-            "grader": lambda ans, target: target.lower() in str(ans).lower()
+            "question": "List all tables in the database",
+            "answer": "users",
+            "grader": simple_grader
         },
         "medium": {
-            "question": "What is the total revenue generated from selling 'Widget X'?",
-            "answer": "306.0", # 2 widgets + 10 widgets = 12 widgets * 25.50 = 306.0
-            "grader": lambda ans, target: str(float(target)) in str(ans) or target in str(ans)
+            "question": "Count number of rows in users table",
+            "answer": "5",
+            "grader": simple_grader
         },
         "hard": {
-            "question": "What is the name of the customer who made the highest total number of orders (i.e. highest order count, not quantity)?",
-            "answer": "Alice Smith", # Alice has 3 orders (1001, 1003, 1008)
-            "grader": lambda ans, target: target.lower() in str(ans).lower()
+            "question": "Find maximum price from products table",
+            "answer": "99.99",
+            "grader": simple_grader
         }
     }
