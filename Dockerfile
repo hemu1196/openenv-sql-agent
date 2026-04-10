@@ -4,14 +4,10 @@ WORKDIR /app
 
 COPY . .
 
-# Upgrade pip
 RUN pip install --no-cache-dir --upgrade pip
 
-# Install required runtime deps
-RUN pip install --no-cache-dir fastapi uvicorn
-
-# Install your project
-RUN pip install --no-cache-dir .
+ 
+RUN pip install --no-cache-dir fastapi uvicorn openenv-core
 
 ENV PYTHONPATH=/app
 
