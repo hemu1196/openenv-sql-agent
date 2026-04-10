@@ -11,6 +11,14 @@ import uvicorn
 
 app = create_fastapi_app(SQLAnalystEnvironment, SQLAgentAction, SQLAgentObservation)
 
+@app.get("/")
+def root():
+    return {"status": "ok"}
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
 def main():
     uvicorn.run("server.app:app", host="0.0.0.0", port=8000)
 
