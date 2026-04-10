@@ -19,4 +19,4 @@ ENV PYTHONPATH=/app
 EXPOSE 8000
 
 # Start server properly (no unnecessary delay needed)
-CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "8000"]
