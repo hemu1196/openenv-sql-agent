@@ -8,9 +8,9 @@ from openai import OpenAI
 from client import SQLAgentEnv, SQLAgentAction
 
 IMAGE_NAME = os.getenv("IMAGE_NAME")
-API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY", "dummy")
-API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
-MODEL_NAME = os.getenv("MODEL_NAME") or "Qwen/Qwen2.5-72B-Instruct"
+API_BASE_URL = os.environ.get("API_BASE_URL", "https://router.huggingface.co/v1")
+API_KEY = os.environ.get("API_KEY", os.environ.get("HF_TOKEN", "dummy"))
+MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 TASK_NAME = os.getenv("MY_ENV_TASK", "sql-exploration")
 BENCHMARK = os.getenv("MY_ENV_BENCHMARK", "openenv-sql-data-analyst")
 MAX_STEPS = 10
