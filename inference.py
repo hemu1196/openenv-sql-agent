@@ -109,22 +109,55 @@ async def run_episode(client: OpenAI, env: SQLAgentEnv, difficulty: str):
 async def main() -> None:
     client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
     
-    # Setup our environment connection
+    # Needs to log start before anything so output matches schema if crash
+    log_start(task=TASK_NAME, env=BENCHMARK, model=MODEL_NAME)
+    
+    env: Optional[SQLAgentEnv] = None
+    
     try:
-        if IMAGE_NAME:
-            env = await SQLAgentEnv.from_docker_image(IMAGE_NAME)
-        else:
-            env = SQLAgentEnv(base_url=os.getenv("SERVER_URL", "http://localhost:8000"))
-            await env.connect()
-            
-        log_start(task=TASK_NAME, env=BENCHMARK, model=MODEL_NAME)
+        print("Starting environment...", flush=True)
+
+        # Retry logic
+        for i in range(3):
+            try:
+                if IMAGE_NAME:
+                    # Narrow type so IDE doesn't complain about generic EnvClient
+                    base_env = await SQLAgentEnv.from_docker_image(IMAGE_NAME)
+                    env = base_env # type: ignore
+                else:
+                    env = SQLAgentEnv(base_url=os.getenv("SERVER_URL", "http://localhost:8000"))
+                    await env.connect()
+
+                print("Environment started", flush=True)
+                break
+
+            except Exception as e:
+                print(f"Retry {i+1} failed: {e}", flush=True)
+                await asyncio.sleep(2)
+
+        # SAFE EXIT 
+        if env is None:
+            print("Could not start environment", flush=True)
+            log_end(success=False, steps=0, score=0.0, rewards=[0.0])
+            return
+
+        # Run episodes safely
         for diff in ["easy", "medium", "hard"]:
-            await run_episode(client, env, diff)
-            
+            try:
+                # Type checker knows env is safely not None and matches
+                await run_episode(client, env, diff)    
+            except Exception as e:
+                print(f"Error in episode {diff}: {e}", flush=True)
+
+    except Exception as e:
+        print(f"Fatal error: {e}", flush=True)
+        log_end(success=False, steps=0, score=0.0, rewards=[0.0])
+
     finally:
         try:
-            if 'env' in locals():
-                await env.close()
+            if env is not None:
+                await env.close() 
+                print("🧹 Environment closed", flush=True)
         except Exception:
             pass
 
