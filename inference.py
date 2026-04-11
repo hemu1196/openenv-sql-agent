@@ -8,8 +8,6 @@ from openai import OpenAI
 from client import SQLAgentEnv, SQLAgentAction
 
 IMAGE_NAME = os.getenv("IMAGE_NAME")
-API_BASE_URL = os.environ.get("API_BASE_URL", "https://router.huggingface.co/v1")
-API_KEY = os.environ.get("API_KEY", os.environ.get("HF_TOKEN", "dummy"))
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 TASK_NAME = os.getenv("MY_ENV_TASK", "sql-exploration")
 BENCHMARK = os.getenv("MY_ENV_BENCHMARK", "openenv-sql-data-analyst")
@@ -112,7 +110,16 @@ async def run_episode(client: OpenAI, env: SQLAgentEnv, difficulty: str):
     log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
 
 async def main() -> None:
-    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+    try:
+        client = OpenAI(
+            base_url=os.environ["API_BASE_URL"], 
+            api_key=os.environ["API_KEY"]
+        )
+    except KeyError:
+        client = OpenAI(
+            base_url=os.environ.get("API_BASE_URL", "https://router.huggingface.co/v1"), 
+            api_key=os.environ.get("API_KEY", os.environ.get("HF_TOKEN", "dummy"))
+        )
     
     env: Optional[SQLAgentEnv] = None
     
